@@ -24,6 +24,6 @@
         </property>
     </bean>
     <!--批量扫描接口生成代理对象-->
-    <spring-mybatis:scan base-package="com.atguigu.dao"></spring-mybatis:scan>
+    <spring-mybatis:scan base-package="com.atguigu"></spring-mybatis:scan>
 
 </beans>

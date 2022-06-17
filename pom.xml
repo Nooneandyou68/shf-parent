@@ -6,24 +6,46 @@
 
     <groupId>com.atguigu</groupId>
     <artifactId>shf-parent</artifactId>
-    <!--父模块：管理子模块 -->
+    <version>1.0</version>
+
+    <!--
+        pom : 父模块。管理子模块。管理jar包等。
+    -->
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <!--聚合：实现一键操作-->
+
+
+    <!--聚合： 实现一键操作。对父工程执行操作，同时也会对被聚合的模型进行同样的操作。-->
     <modules>
+        <!--<module>common-util</module>-->
+        <!--<module>common-util dev01 mmm</module>-->
+        <!--<module>common-util dev01  ddd</module>-->
         <module>common-util</module>
         <module>model</module>
         <module>web-admin</module>
     </modules>
+
+    <!--对项目中所有jar包进行版本统一管理。-->
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <spring.version>5.2.7.RELEASE</spring.version>
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
         <pagehelper.version>4.1.4</pagehelper.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <fastjson.version>1.2.29</fastjson.version>
+        <!--<fastjson.version>1.2.29</fastjson.version>-->
+        <!--
+        【2022年5月24日预警通报】接国家通报中心通知：
+        阿里巴巴公司开源Java开发组件fastjson存在反序列化漏洞，
+        攻击者可利用该漏洞实施任意文件写入、服务端请求伪造等攻击行为，
+        造成服务器权限被窃取、敏感信息泄漏等严重影响。
+        漏洞影响范围为fastjson 1.2.80及之前所有版本，
+        目前可升级最新版本1.2.83以修复该漏洞，
+        最新版本下载地址为：https://github.com/alibab
+        -->
+        <fastjson.version>1.2.83</fastjson.version>
         <mybatis.version>3.4.5</mybatis.version>
         <mybatis.spring.version>1.3.1</mybatis.spring.version>
+        <!--<mysql.version>5.1.46</mysql.version>-->
         <mysql.version>8.0.26</mysql.version>
         <druid.version>1.1.12</druid.version>
         <commons-fileupload.version>1.3.1</commons-fileupload.version>
@@ -31,7 +53,10 @@
         <logback-version>1.2.3</logback-version>
     </properties>
 
-    <!-- 依赖管理 -->
+
+    <!-- 依赖管理：只是管理依赖配置，并没有下载和注入jar包到项目中。
+        子工程需要使用jar包，必须再次声明才能导入jar包。只是不需要设置版本和依赖范围。
+    -->
     <dependencyManagement>
         <dependencies>
             <!-- SpringMVC相关 -->
@@ -39,6 +64,12 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
+                <!--
+                    compile : 默认
+                    test :
+                    provided :
+                -->
+                <!--<scope>compile</scope>-->
             </dependency>
             <!--spring封装的jdbc数据库访问-->
             <dependency>
@@ -129,6 +160,9 @@
         </dependencies>
     </dependencyManagement>
 
+    <!--依赖管理： 直接下载并注入jar包到项目中
+        子工程可以直接继承父工程的jar包，直接使用，无需任何声明配置。
+    -->
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
