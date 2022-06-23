@@ -27,7 +27,7 @@ public class BaseController {
      * @date 2022/6/17 19:56
      */
     protected String successPage(String message, HttpServletRequest request) {
-        request.setAttribute("messagePage", StringUtil.isNotEmpty(message));
+        request.setAttribute("messagePage", StringUtil.isEmpty(message) ? MESSAGE_SUCCESS : message);
         return PAGE_SUCCESS;
     }
 

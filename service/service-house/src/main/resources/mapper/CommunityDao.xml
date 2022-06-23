@@ -184,4 +184,11 @@
         <include refid="where"></include>
         order by id desc
     </select>
+
+    <select id="findAll" resultMap="Community">
+        select
+        <include refid="column"></include>
+        from hse_community where is_deleted=0
+        order by id desc
+    </select>
 </mapper>

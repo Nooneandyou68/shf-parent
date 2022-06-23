@@ -3,6 +3,8 @@ package com.atguigu.dao;
 import com.atguigu.base.BaseDao;
 import com.atguigu.entity.Community;
 
+import java.util.List;
+
 /**
  * @PROJECT_NAME: shf-parent
  * @DESCRIPTION:
@@ -11,4 +13,5 @@ import com.atguigu.entity.Community;
  */
 public interface CommunityDao extends BaseDao<Community> {
 
+    List<Community> findAll();
 }

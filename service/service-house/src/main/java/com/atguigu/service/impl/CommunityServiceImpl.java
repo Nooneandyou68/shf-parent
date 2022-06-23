@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.ws.Action;
+import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,5 +56,20 @@ public class CommunityServiceImpl extends BaseServiceImpl<Community> implements 
             community.setPlateName(dictDao.getNameById(community.getPlateId()));
         }
         return new PageInfo(page,5);
+    }
+
+    @Override
+    public List<Community> findAll() {
+        return communityDao.findAll();
+    }
+
+    @Override
+    public Community getById(Serializable id) {
+        Community community = communityDao.getById(id);
+        if (community != null) {
+            community.setAreaName(dictDao.getNameById(community.getAreaId()));
+            community.setPlateName(dictDao.getNameById(community.getPlateId()));
+        }
+        return community;
     }
 }

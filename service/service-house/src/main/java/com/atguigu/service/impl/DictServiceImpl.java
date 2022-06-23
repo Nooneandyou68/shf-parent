@@ -1,6 +1,9 @@
 package com.atguigu.service.impl;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.base.BaseDao;
 import com.atguigu.base.BaseServiceImpl;
 import com.atguigu.dao.DictDao;
@@ -8,7 +11,11 @@ import com.atguigu.entity.Dict;
 import com.atguigu.service.DictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +27,9 @@ public class DictServiceImpl extends BaseServiceImpl<Dict> implements DictServic
 
    @Autowired
    DictDao dictDao;
+
+   @Autowired
+   JedisPool jedisPool;
 
    @Override
    public BaseDao<Dict> getEntityDao() {
@@ -44,7 +54,7 @@ public class DictServiceImpl extends BaseServiceImpl<Dict> implements DictServic
          Long id = dict.getId();
          Long pId = id;
          int count = dictDao.countIsParent(pId); //根据pid统计孩子数量
-         map.put("isParent",count>0?true:false);
+         map.put("isParent", count > 0 ? true : false);
          data.add(map);
       }
 
@@ -53,7 +63,36 @@ public class DictServiceImpl extends BaseServiceImpl<Dict> implements DictServic
 
    @Override
    public List<Dict> findListByParentId(Long parentId) {
-      return dictDao.findZnodesByParentId(parentId);
+      Jedis jedis = null;
+      try {
+         String key = "shf:dict:parentId:"+parentId;
+         //1.先从缓存中查询，如果有数据，直接返回，无需查询数据库
+         jedis = jedisPool.getResource();
+         String value = jedis.get(key); //存储时将List<Dict>转换为字符串存储的，获取得到的是字符串
+         if(!StringUtils.isEmpty(value)){
+            Type listType = new TypeReference<List<Dict>>(){}.getType();
+            List<Dict> list = JSON.parseObject(value, listType);
+            System.out.println("redis list = " + list);
+            return list;
+         }
+
+         //2.如果缓存中没有，则查询数据库，并将数据存放到缓存中，给下次访问数据利用缓存。
+         List<Dict> list2 = dictDao.findZnodesByParentId(parentId);
+         //if(list2 != null && list2.size()>0){
+         if(!CollectionUtils.isEmpty(list2)){
+            jedis.set(key,JSON.toJSONString(list2));
+            System.out.println("db list = " + list2);
+            return list2;
+         }
+
+      } catch (Exception e) {
+         e.printStackTrace();
+      } finally {
+         if(jedis!=null){
+            jedis.close();
+         }
+      }
+      return null;
    }
 
    @Override
