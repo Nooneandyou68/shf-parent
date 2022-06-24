@@ -1,7 +1,9 @@
 package com.atguigu.service;
 
 import com.atguigu.base.BaseService;
+import com.atguigu.base.BaseServiceImpl;
 import com.atguigu.entity.HouseBroker;
+
 import java.util.List;
 
 public interface HouseBrokerService extends BaseService<HouseBroker> {

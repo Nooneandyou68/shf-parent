@@ -1,5 +1,6 @@
 package com.atguigu.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.atguigu.base.BaseDao;
 import com.atguigu.base.BaseServiceImpl;
@@ -8,17 +9,17 @@ import com.atguigu.dao.HouseDao;
 import com.atguigu.entity.House;
 import com.atguigu.service.DictService;
 import com.atguigu.service.HouseService;
+import com.atguigu.vo.HouseQueryVo;
+import com.atguigu.vo.HouseVo;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 
-/**
- * @PROJECT_NAME: shf-parent
- * @DESCRIPTION:
- * @USER: Administrator
- * @DATE: 2022/6/22 19:52
- */
 @Service(interfaceClass = HouseService.class)
 @Transactional
 public class HouseServiceImpl extends BaseServiceImpl<House> implements HouseService {
@@ -27,11 +28,14 @@ public class HouseServiceImpl extends BaseServiceImpl<House> implements HouseSer
     HouseDao houseDao;
 
     @Autowired
-    DictDao dicDao;
+    DictDao dictDao; //房源服务接口和数据字典接口在同一个服务应用中，直接调用dao层即可。无需远程调用。
+
+    //@Reference
+    //DictService dictService;
 
     @Override
     public BaseDao<House> getEntityDao() {
-        return houseDao;
+         return houseDao;
     }
 
     @Override
@@ -45,20 +49,21 @@ public class HouseServiceImpl extends BaseServiceImpl<House> implements HouseSer
     @Override
     public House getById(Serializable id) {
         House house = houseDao.getById(id);
-        if (house != null) {
+        if(house!=null){
             if(null == house) return null;
+
             //户型：
-            String houseTypeName = dicDao.getNameById(house.getHouseTypeId());
+            String houseTypeName = dictDao.getNameById(house.getHouseTypeId());
             //楼层
-            String floorName = dicDao.getNameById(house.getFloorId());
+            String floorName = dictDao.getNameById(house.getFloorId());
             //建筑结构：
-            String buildStructureName = dicDao.getNameById(house.getBuildStructureId());
+            String buildStructureName = dictDao.getNameById(house.getBuildStructureId());
             //朝向：
-            String directionName = dicDao.getNameById(house.getDirectionId());
+            String directionName = dictDao.getNameById(house.getDirectionId());
             //装修情况：
-            String decorationName = dicDao.getNameById(house.getDecorationId());
+            String decorationName = dictDao.getNameById(house.getDecorationId());
             //房屋用途：
-            String houseUseName = dicDao.getNameById(house.getHouseUseId());
+            String houseUseName = dictDao.getNameById(house.getHouseUseId());
             house.setHouseTypeName(houseTypeName);
             house.setFloorName(floorName);
             house.setBuildStructureName(buildStructureName);
@@ -66,7 +71,21 @@ public class HouseServiceImpl extends BaseServiceImpl<House> implements HouseSer
             house.setDecorationName(decorationName);
             house.setHouseUseName(houseUseName);
         }
-        return super.getById(id);
+
+        return house;
     }
 
+    @Override
+    public PageInfo<HouseVo> findListPage(int pageNum, int pageSize, HouseQueryVo houseQueryVo) {
+        PageHelper.startPage(pageNum,pageSize);
+        Page<HouseVo> page = houseDao.findListPage(houseQueryVo); //进行连表查询
+        if(page!= null && page.size()>0){
+            for (HouseVo houseVo : page) {
+                houseVo.setHouseTypeName(dictDao.getNameById(houseVo.getHouseTypeId()));
+                houseVo.setFloorName(dictDao.getNameById(houseVo.getFloorId()));
+                houseVo.setDirectionName(dictDao.getNameById(houseVo.getDirectionId()));
+            }
+        }
+        return new PageInfo<HouseVo>(page,5);
+    }
 }

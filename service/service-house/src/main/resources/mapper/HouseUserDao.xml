@@ -19,26 +19,26 @@
 
     <!-- 用于select查询公用抽取的列 -->
     <sql id="columns">
-        id,house_id,name,phone,sex,id_no,create_time,update_time,is_deleted
-    </sql>
+      id,house_id,name,phone,sex,id_no,create_time,update_time,is_deleted
+   </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into hse_house_user (
-            id ,
-            house_id ,
-            name ,
-            phone ,
-            sex ,
-            id_no
+           id ,
+           house_id ,
+           name ,
+           phone ,
+           sex ,
+           id_no
         ) values (
-                     #{id} ,
-                     #{houseId} ,
-                     #{name} ,
-                     #{phone} ,
-                     #{sex} ,
-                     #{idNo}
-                 )
-    </insert>
+           #{id} ,
+           #{houseId} ,
+           #{name} ,
+           #{phone} ,
+           #{sex} ,
+           #{idNo}
+        )
+   </insert>
 
     <update id="update" >
         update hse_house_user set
@@ -64,10 +64,10 @@
 
     <update id="delete">
         update hse_house_user set
-                                  update_time = now() ,
-                                  is_deleted = 1
+         update_time = now() ,
+         is_deleted = 1
         where
-            id = #{id}
+           id = #{id}
     </update>
 
     <select id="getById" resultMap="HouseUser">

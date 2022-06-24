@@ -15,16 +15,16 @@ import java.util.List;
 @Transactional
 public class HouseBrokerServiceImpl extends BaseServiceImpl<HouseBroker> implements HouseBrokerService {
 
-   @Autowired
-   private HouseBrokerDao houseBrokerDao;
+    @Autowired
+    HouseBrokerDao houseBrokerDao;
 
-   @Override
-   public BaseDao<HouseBroker> getEntityDao() {
-      return houseBrokerDao;
-   }
+    @Override
+    public BaseDao<HouseBroker> getEntityDao() {
+        return houseBrokerDao;
+    }
 
-   @Override
-   public List<HouseBroker> findListByHouseId(Long houseId) {
-      return houseBrokerDao.findListByHouseId(houseId);
-   }
+    @Override
+    public List<HouseBroker> findListByHouseId(Long houseId) {
+        return houseBrokerDao.findListByHouseId(houseId);
+    }
 }

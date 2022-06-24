@@ -77,23 +77,23 @@
             average_price
         )
         values(
-                  #{name},
-                  #{description},
-                  #{provinceId},
-                  #{cityId},
-                  #{areaId},
-                  #{plateId},
-                  #{address},
-                  #{longitude},
-                  #{latitude},
-                  #{buildYears},
-                  #{propertyPrice},
-                  #{propertyCompany},
-                  #{developer},
-                  #{buildNum},
-                  #{houseNum},
-                  #{averagePrice}
-              )
+            #{name},
+            #{description},
+            #{provinceId},
+            #{cityId},
+            #{areaId},
+            #{plateId},
+            #{address},
+            #{longitude},
+            #{latitude},
+            #{buildYears},
+            #{propertyPrice},
+            #{propertyCompany},
+            #{developer},
+            #{buildNum},
+            #{houseNum},
+            #{averagePrice}
+        )
     </insert>
 
     <select id="getById" resultMap="Community">
@@ -186,8 +186,7 @@
     </select>
 
     <select id="findAll" resultMap="Community">
-        select
-        <include refid="column"></include>
+        select <include refid="column"></include>
         from hse_community where is_deleted=0
         order by id desc
     </select>

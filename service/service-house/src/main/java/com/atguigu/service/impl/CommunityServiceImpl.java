@@ -14,29 +14,25 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.ws.Action;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @PROJECT_NAME: shf-parent
- * @DESCRIPTION:
- * @USER: Administrator
- * @DATE: 2022/6/21 19:45
- */
 @Service(interfaceClass = CommunityService.class)
 @Transactional
 public class CommunityServiceImpl extends BaseServiceImpl<Community> implements CommunityService {
+
     @Autowired
     CommunityDao communityDao;
+
     @Autowired
     DictDao dictDao;
 
     @Override
     public BaseDao<Community> getEntityDao() {
-        return communityDao;
+         return communityDao;
     }
+
 
     @Override
     public PageInfo<Community> findPage(Map<String, Object> filters) {
@@ -46,15 +42,16 @@ public class CommunityServiceImpl extends BaseServiceImpl<Community> implements 
         //开启分页功能，将这两个参数，与当前线程进行绑定，传递给dao层。
         // startIndex = (pageNum-1)*pageSize
         // select 语句 最后，自动增加 limit ?,?         limit startIndex,pageSIze
-        PageHelper.startPage(pageNum, pageSize); // ThreadLocal
+        PageHelper.startPage(pageNum,pageSize); // ThreadLocal
 
         Page<Community> page = getEntityDao().findPage(filters);
 
         for (Community community : page) {
-            //处理关联数据
+            //处理关联字段名称数据
             community.setAreaName(dictDao.getNameById(community.getAreaId()));
             community.setPlateName(dictDao.getNameById(community.getPlateId()));
         }
+
         return new PageInfo(page,5);
     }
 
@@ -66,7 +63,7 @@ public class CommunityServiceImpl extends BaseServiceImpl<Community> implements 
     @Override
     public Community getById(Serializable id) {
         Community community = communityDao.getById(id);
-        if (community != null) {
+        if(community!=null){
             community.setAreaName(dictDao.getNameById(community.getAreaId()));
             community.setPlateName(dictDao.getNameById(community.getPlateId()));
         }

@@ -5,12 +5,6 @@ import com.atguigu.entity.Community;
 
 import java.util.List;
 
-/**
- * @PROJECT_NAME: shf-parent
- * @DESCRIPTION:
- * @USER: Administrator
- * @DATE: 2022/6/21 19:42
- */
 public interface CommunityService extends BaseService<Community> {
     List<Community> findAll();
 }

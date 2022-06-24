@@ -18,24 +18,24 @@
 
     <!-- 用于select查询公用抽取的列 -->
     <sql id="columns">
-        id,house_id,image_name,image_url,type,create_time,update_time,is_deleted
-    </sql>
+      id,house_id,image_name,image_url,type,create_time,update_time,is_deleted
+   </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into hse_house_image (
-            id ,
-            house_id ,
-            image_name ,
-            image_url ,
-            type
+           id ,
+           house_id ,
+           image_name ,
+           image_url ,
+           type
         ) values (
-                     #{id} ,
-                     #{houseId} ,
-                     #{imageName} ,
-                     #{imageUrl} ,
-                     #{type}
-                 )
-    </insert>
+           #{id} ,
+           #{houseId} ,
+           #{imageName} ,
+           #{imageUrl} ,
+           #{type}
+        )
+   </insert>
 
     <update id="update" >
         update hse_house_image set
@@ -58,10 +58,10 @@
 
     <update id="delete">
         update hse_house_image set
-                                   update_time = now() ,
-                                   is_deleted = 1
+         update_time = now() ,
+         is_deleted = 1
         where
-            id = #{id}
+           id = #{id}
     </update>
 
     <select id="getById" resultMap="HouseImage">

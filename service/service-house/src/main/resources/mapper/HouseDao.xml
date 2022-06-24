@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!--开发参考 ： 087_尚硅谷_尚好房_小区管理_Dao代码-->
 <mapper namespace="com.atguigu.dao.HouseDao">
 
     <resultMap id="House" type="House">
@@ -31,46 +31,46 @@
 
     <!-- 用于select查询公用抽取的列 -->
     <sql id="columns">
-        id,community_id,name,description,total_price,unit_price,build_area,inside_area,house_type_id,floor_id,build_structure_id,direction_id,decoration_id,house_use_id,elevator_ratio,listing_date,last_trade_date,status,create_time,update_time,is_deleted
-    </sql>
+id,community_id,name,description,total_price,unit_price,build_area,inside_area,house_type_id,floor_id,build_structure_id,direction_id,decoration_id,house_use_id,elevator_ratio,listing_date,last_trade_date,status,create_time,update_time,is_deleted
+   </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into hse_house (
-            community_id ,
-            name ,
-            description ,
-            total_price ,
-            unit_price ,
-            build_area ,
-            inside_area ,
-            house_type_id ,
-            floor_id ,
-            build_structure_id ,
-            direction_id ,
-            decoration_id ,
-            house_use_id ,
-            elevator_ratio ,
-            listing_date ,
-            last_trade_date
+           community_id ,
+           name ,
+           description ,
+           total_price ,
+           unit_price ,
+           build_area ,
+           inside_area ,
+           house_type_id ,
+           floor_id ,
+           build_structure_id ,
+           direction_id ,
+           decoration_id ,
+           house_use_id ,
+           elevator_ratio ,
+           listing_date ,
+           last_trade_date
         ) values (
-                     #{communityId} ,
-                     #{name} ,
-                     #{description} ,
-                     #{totalPrice} ,
-                     #{unitPrice} ,
-                     #{buildArea} ,
-                     #{insideArea} ,
-                     #{houseTypeId} ,
-                     #{floorId} ,
-                     #{buildStructureId} ,
-                     #{directionId} ,
-                     #{decorationId} ,
-                     #{houseUseId} ,
-                     #{elevatorRatio} ,
-                     #{listingDate} ,
-                     #{lastTradeDate}
-                 )
-    </insert>
+           #{communityId} ,
+           #{name} ,
+           #{description} ,
+           #{totalPrice} ,
+           #{unitPrice} ,
+           #{buildArea} ,
+           #{insideArea} ,
+           #{houseTypeId} ,
+           #{floorId} ,
+           #{buildStructureId} ,
+           #{directionId} ,
+           #{decorationId} ,
+           #{houseUseId} ,
+           #{elevatorRatio} ,
+           #{listingDate} ,
+           #{lastTradeDate}
+        )
+   </insert>
 
 
     <update id="update" >
@@ -133,10 +133,10 @@
 
     <update id="delete">
         update hse_house set
-                             update_time = now() ,
-                             is_deleted = 1
+         update_time = now() ,
+         is_deleted = 1
         where
-            id = #{id}
+           id = #{id}
     </update>
 
     <select id="getById" resultMap="House">
@@ -183,4 +183,69 @@
         order by id desc
     </select>
 
+
+    <select id="findListPage" resultType="com.atguigu.vo.HouseVo"
+            parameterType="com.atguigu.vo.HouseQueryVo">
+        SELECT
+          c.name AS communityName ,
+          h.id AS id,
+          h.name AS NAME,
+          h.build_area AS buildArea,
+          h.`total_price` AS totalPrice,
+          h.unit_price AS unitPrice,
+          h.`house_type_id` AS houseTypeId,
+          h.`floor_id` AS floorId,
+          h.`direction_id` AS directionId,
+          h.`default_image_url` AS defaultImageUrl,
+          h.`create_time` AS createTime
+        FROM
+          hse_house h
+          LEFT JOIN hse_community c
+            ON h.community_id = c.id
+        <where>
+               <if test="areaId!=null and areaId!=''">
+                   and c.area_id=#{areaId}
+               </if>
+               <if test="plateId!=null and plateId!=''">
+                   and c.plate_id=#{plateId}
+               </if>
+               <if test="keyword!=null and keyword!=''">
+                   and h.name like concat('%',#{keyword},'%')
+               </if>
+               <if test="totalPrice!=null and totalPrice!=''">
+                   and h.total_price=#{totalPrice}
+               </if>
+               <if test="houseTypeId!=null and houseTypeId!=''">
+                   and h.house_type_id=#{houseTypeId}
+               </if>
+               <if test="floorId!=null and floorId!=''">
+                   and h.floor_id=#{floorId}
+               </if>
+               <if test="buildStructureId!=null and buildStructureId!=''">
+                   and h.build_structure_id=#{buildStructureId}
+               </if>
+               <if test="directionId!=null and directionId!=''">
+                   and h.direction_id=#{directionId}
+               </if>
+               <if test="decorationId!=null and decorationId!=''">
+                   and h.decoration_id=#{decorationId}
+               </if>
+               <if test="houseUseId!=null and houseUseId!=''">
+                   and h.house_use_id=#{houseUseId}
+               </if>
+                and h.is_deleted = 0
+                and c.is_deleted = 0
+                and h.status = 1
+        </where>
+        <if test="defaultSort!=null and defaultSort==1">
+            order by h.id desc
+        </if>
+        <if test="priceSort!=null and priceSort==1">
+            order by h.total_price desc
+        </if>
+        <if test="timeSort!=null and timeSort==1">
+            order by h.create_time desc
+        </if>
+
+    </select>
 </mapper>

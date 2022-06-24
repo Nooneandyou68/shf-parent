@@ -2,13 +2,13 @@ package com.atguigu.service;
 
 import com.atguigu.base.BaseService;
 import com.atguigu.entity.House;
+import com.atguigu.vo.HouseQueryVo;
+import com.atguigu.vo.HouseVo;
+import com.github.pagehelper.PageInfo;
 
-/**
- * @PROJECT_NAME: shf-parent
- * @DESCRIPTION:
- * @USER: Administrator
- * @DATE: 2022/6/22 19:51
- */
 public interface HouseService extends BaseService<House> {
     void publish(Long id, Integer status);
+
+    PageInfo<HouseVo> findListPage(
+            int pageNum, int pageSize, HouseQueryVo houseQueryVo);
 }
