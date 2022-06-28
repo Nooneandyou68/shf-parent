@@ -8,6 +8,7 @@
             <form id="ec" th:action="@{/houseBroker/update/{id}(id=${houseBroker.id})}" method="post" class="form-horizontal">
                 <div class="form-group">
                     <label class="col-sm-2 control-label">经纪人：</label>
+                    <!--<input type="hidden" name="id" th:value="${item.id}">-->
                     <div class="col-sm-10">
                         <select name="brokerId" id="brokerId" class="form-control">
                             <option value="">-请选择-</option>

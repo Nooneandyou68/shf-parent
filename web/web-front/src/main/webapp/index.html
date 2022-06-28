@@ -23,7 +23,14 @@
     <div class="header">
         <div class="width1190">
             <div class="fl">您好，欢迎来到尚好房！</div>
-            <div class="fr">
+            <div class="fr" v-if="userInfo.nickName!=''">
+                {{userInfo.nickName}} |
+                <a href="javascript:;" @click="logout()">退出</a> |
+                <a href="/follow.html">我的关注</a> |
+                <a href="javascript:;">加入收藏</a> |
+                <a href="javascript:;">设为首页</a>
+            </div>
+            <div class="fr" v-else>
                 <a href="login.html">登录</a> |
                 <a href="register.html">注册</a> |
                 <a href="javascript:;">加入收藏</a> |
@@ -243,16 +250,33 @@ new Vue({
         },
         defaultSort :1,
         priceSort: null,
-        timeSort: null
+        timeSort: null,
+        userInfo:{
+            phone:'',
+            nickName:''
+        }
     },
 
     created () {
         //页面加载完成，并且vue对象被创建后，执行声明周期钩子函数，调用fetchDictData获取页面的字典
         this.fetchDictData()
         this.fetchData(1)
+        this.login()
     },
 
     methods: {
+        login(){
+            let userInfoString = window.localStorage.getItem("userInfo")
+            if(userInfoString != null && userInfoString != '') {
+                this.userInfo = JSON.parse(userInfoString)
+            }
+        },
+        logout(){
+            axios.get('/userInfo/logout').then(function (response) {
+                window.localStorage.setItem("userInfo",'');
+                window.location.href = "login.html";
+            })
+        },
         fetchDictData(){ //获取页面字典
             var that = this
             axios.get("/dict/findListByDictCode/beijing").then(function (response) {

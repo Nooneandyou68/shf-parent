@@ -19,7 +19,9 @@
                                 <td>
                                     <select name="areaId" id="areaId" class="form-control">
                                         <option value="">-请选择区域-</option>
-                                        <option th:each="item,it : ${areaList}" th:text="${item.name}" th:value="${item.id}" th:selected="${item.id } eq  ${filters.areaId }">-选择区域-</option>
+                                        <option th:each="item,it : ${areaList}"
+                                                th:text="${item.name}" th:value="${item.id}"
+                                                th:selected="${item.id } eq  ${filters.areaId }">-选择区域-</option>
                                     </select>
                                 </td>
                                 <td>
@@ -73,7 +75,7 @@
     </div>
 </form>
 <script th:inline="javascript">
-    $(function(){
+    $(function(){  //页面加载完成需要执行的事件。
         $(".create").on("click",function () {
             opt.openWin('/community/create','新增',630,430)
         });
@@ -83,18 +85,20 @@
         });
         $(".delete").on("click",function(){
             var id = $(this).attr("data-id");
-            opt.confirm('/community/delete/'+id,'确定要删除吗？');
+            opt.confirm('/community/delete/'+id,"确定删除吗?");
         });
 
-        $("#areaId").bind("change",function() {
-            var areaId = $("#areaId").val();
-            if(areaId == '') return
-            $("#plateId").empty();
-            $.get("/dict/findListByParentId/" + areaId,function(response) {
-                $("<option value=''>-请选择板块-</option>").appendTo("#plateId");
-                var res = JSON.parse(response)
-                $.each(res.data, function(i,item) {
-                    var plateId = [[${filters.plateId}]];
+        $("#areaId").bind("change",function() { //绑定下拉列选的change事件。
+            var areaId = $("#areaId").val(); //获取下拉列选选项的value属性值： 例如 110234 （昌平）
+            if(areaId == '') return  // 如果选中下拉列选的默认选项，areaId==''
+            $("#plateId").empty(); //将select下拉的option标签全部干掉
+
+            //局部刷新板块下拉列选
+            $.get("/dict/findListByParentId/" + areaId,function(result) { //异步请求获取区域对应版本集合
+                $("<option value=''>-请选择板块-</option>").appendTo("#plateId"); //往select下拉列选中增加默认选项
+                var result = JSON.parse(result) //解析controller返回的json串(Result序列化生成的)，转换json对象。
+                $.each(result.data, function(i,item) { //获取板块集合：res.data  进行迭代，每次迭代都回调这个函数，参数：索引，集合元素（dict）
+                    var plateId = [[${filters.plateId}]]; //获取提交请求时，选中的板块，目的为了回显，哪个被选中，哪个就被回显
                     if(item.id == plateId) {
                         $("<option></option>").val(item.id).text(item.name).attr('selected', 'true').appendTo("#plateId");
                     } else {
@@ -104,7 +108,7 @@
             });
         });
         // 触发 select 元素的 change 事件：
-        $("#areaId").trigger("change");
+        $("#areaId").trigger("change"); //一来到页面就自动触发change事件，相当于人为点击下拉列选默认选项。
     });
 </script>
 </body>

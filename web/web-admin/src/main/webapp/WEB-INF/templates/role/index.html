@@ -43,6 +43,7 @@
                                     <!--将id值赋值给临时属性，便于jQuery获取id-->
                                     <a class="edit" th:attr="data-id=${item.id}">修改</a>
                                     <a class="delete" th:attr="data-id=${item.id}">删除</a>
+                                    <a class="assignPermission" th:attr="data-id=${item.id}">分配权限</a>
                                 </td>
                             </tr>
 
@@ -101,6 +102,11 @@
             var id = $(this).attr("data-id");
             opt.confirm("/role/delete/"+id,"确认要删除吗?");
         });
+
+        $(".assignPermission").on("click",function (){
+            var roleId = $(this).attr("data-id");
+            opt.confirm("/role/assignPermission/"+roleId,"分配权限",580,430);
+        })
     });
 </script>
 

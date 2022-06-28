@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.dao.UserFollowDao">
+
+    <resultMap id="UserFollow" type="UserFollow">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="houseId" column="house_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+		id,user_id,house_id,create_time,update_time,is_deleted
+	</sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into user_follow (
+        	id ,
+        	user_id ,
+        	house_id
+        ) values (
+        	#{id} ,
+        	#{userId} ,
+        	#{houseId}
+        )
+	</insert>
+
+    <update id="update" >
+        update user_follow set
+        <if test="userId != null and userId != ''">
+            user_id = #{userId} ,
+        </if>
+        <if test="houseId != null and houseId != ''">
+            house_id = #{houseId} ,
+        </if>
+        update_time =  now()
+        where
+        id = #{id}
+    </update>
+
+    <update id="delete">
+        update user_follow set
+			update_time = now() ,
+			is_deleted = 1
+        where
+        	id = #{id}
+    </update>
+
+    <select id="getById" resultMap="UserFollow">
+        select <include refid="columns" />
+        from user_follow
+        where
+        id = #{id}
+    </select>
+
+    <select id="countByUserIdAndHouserId" resultType="integer">
+        select count(*) from user_follow
+        where user_id=#{userId} and house_id=#{houseId} and is_deleted=0
+    </select>
+
+
+    <select id="findListPage" parameterType="long" resultType="com.atguigu.vo.UserFollowVo">
+        SELECT
+           f.id AS id,
+           f.house_id AS houseId,
+           f.create_time AS createTime,
+
+           h.name AS NAME,
+           h.build_area AS buildArea,
+           h.total_price AS totalPrice,
+           h.house_type_id AS houseTypeId,
+           h.floor_id AS floorId,
+           h.direction_id AS directionId,
+           h.default_image_url AS defaultImageUrl,
+
+           c.name AS communityName
+        FROM user_follow f
+        LEFT JOIN hse_house h ON f.`house_id` = h.id
+        LEFT JOIN hse_community c ON h.community_id = c.id
+        WHERE
+            f.user_id=#{userId}
+            AND f.`is_deleted`=0
+            AND h.is_deleted = 0
+            AND c.is_deleted = 0
+        ORDER BY f.id DESC
+    </select>
+</mapper>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="common/head :: head"></head>
 <script type="text/javascript">
-    $(function(){
+    $(function(){ //页面加载完成时触发
         $("#areaId").bind("change",function() {
             var areaId = $("#areaId").val();
             if(areaId == '') return

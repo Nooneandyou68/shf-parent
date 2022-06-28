@@ -1,5 +1,6 @@
 package com.atguigu.aop;
 
+
 import com.atguigu.util.IpUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -11,32 +12,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * 类描述: 日志拦截器，打印controller层的入参和出参
- */
 @Aspect
 @Component
 public class ControllerAspect {
 
-    private static final Logger log = LoggerFactory.getLogger(ControllerAspect.class);
-    /**
-     * Controller aspect.
-     */
-    @Pointcut("execution(* com.atguigu.controller..*.*(..))")
-    public void controllerAspect() {
-    }
+    Logger log = LoggerFactory.getLogger(ControllerAspect.class);
 
-    /**
-     * Around 手动控制调用核心业务逻辑，以及调用前和调用后的处理,
-     *
-     * @param pjp the pjp
-     * @return object
-     * @throws Throwable the throwable
-     */
-    @Around(value = "controllerAspect()")
-    public Object aroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
+    //声明切入点表达式
+    @Pointcut("execution(* com.atguigu.controller..*.*(..))")
+    public void pointcut(){}
+
+    //5种常用通知：前置通知、后置通知、异常通知、方法返回通知、环绕通知
+    @Around(value = "pointcut()")
+    public Object aroundAdvice(ProceedingJoinPoint pjp) throws Throwable{
+        //获取日志相关数据，通过slf4j打印日志（console）
         RequestAttributes ra = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes sra = (ServletRequestAttributes) ra;
         HttpServletRequest request = sra.getRequest();

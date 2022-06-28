@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.dao.PermissionDao">
+
+    <resultMap id="Permission" type="Permission">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <result property="code" column="code"/>
+        <result property="type" column="type"/>
+        <result property="sort" column="sort"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        id,parent_id,name,url,code,type,sort,create_time,update_time,is_deleted
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into acl_permission (
+            id ,
+            parent_id ,
+            name ,
+            url ,
+            code ,
+            type ,
+            sort
+        ) values (
+                     #{id} ,
+                     #{parentId} ,
+                     #{name} ,
+                     #{url} ,
+                     #{code} ,
+                     #{type} ,
+                     #{sort}
+                 )
+    </insert>
+
+    <update id="update" >
+        update acl_permission set
+        <if test="parentId != null and parentId != ''">
+            parent_id = #{parentId} ,
+        </if>
+        <if test="name != null and name != ''">
+            name = #{name} ,
+        </if>
+        <if test="url != null and url != ''">
+            url = #{url} ,
+        </if>
+        <if test="code != null and code != ''">
+            code = #{code} ,
+        </if>
+        <if test="type != null and type != ''">
+            type = #{type} ,
+        </if>
+        <if test="sort != null and sort != ''">
+            sort = #{sort} ,
+        </if>
+        update_time =  now()
+        where
+        id = #{id}
+    </update>
+
+    <update id="delete">
+        update acl_permission set
+                                  update_time = now() ,
+                                  is_deleted = 1
+        where
+            id = #{id}
+    </update>
+
+    <select id="getById" resultMap="Permission">
+        select <include refid="columns" />
+        from acl_permission
+        where
+        id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="Permission">
+        select <include refid="columns" />
+        from acl_permission
+        where
+        is_deleted = 0
+        order by sort
+    </select>
+
+    <select id="findPermissionListByAdminId" parameterType="long" resultMap="Permission">
+        select distinct
+            p.id,p.parent_id,p.name,p.url,p.code,p.type,p.sort,p.create_time,p.update_time,p.is_deleted
+        from
+            acl_permission p
+                inner join acl_role_permission rp
+                           on p.id = rp.`permission_id`
+                inner join acl_admin_role ar
+                           on rp.role_id = ar.`role_id`
+        where ar.`admin_id` = #{adminId}
+          and p.type = 1
+          and p.is_deleted = 0
+          and rp.`is_deleted` = 0
+          and ar.`is_deleted` = 0
+        order by p.sort asc
+    </select>
+
+    <select id="findAllCode" resultType="string">
+        select distinct
+            p.code
+        from acl_permission p
+        where p.type = 2 and p.is_deleted = 0
+    </select>
+
+    <select id="findCodeByAdminId" parameterType="long" resultType="string">
+        select distinct
+            p.code
+        from
+            acl_permission p
+                inner join acl_role_permission rp
+                           on p.id = rp.`permission_id`
+                inner join acl_admin_role ar
+                           on rp.role_id = ar.`role_id`
+        where ar.`admin_id` = #{adminId}
+          and p.type = 2
+          and p.is_deleted = 0
+          and rp.`is_deleted` = 0
+          and ar.`is_deleted` = 0
+    </select>
+</mapper>

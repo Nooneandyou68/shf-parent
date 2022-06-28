@@ -30,7 +30,14 @@
     <div class="header">
         <div class="width1190">
             <div class="fl">您好，欢迎来到尚好房！</div>
-            <div class="fr">
+            <div class="fr" v-if="userInfo.nickName!=''">
+                {{userInfo.nickName}} |
+                <a href="javascript:;" @click="logout()">退出</a> |
+                <a href="/follow.html">我的关注</a> |
+                <a href="javascript:;">加入收藏</a> |
+                <a href="javascript:;">设为首页</a>
+            </div>
+            <div class="fr" v-else>
                 <a href="login.html">登录</a> |
                 <a href="register.html">注册</a> |
                 <a href="javascript:;">加入收藏</a> |
@@ -79,7 +86,7 @@
             <div class="proText fr">
                 <h3 class="proTitle">
                     {{ house.name }}
-                    <span v-if="isFollow" style="margin-left: 50px; font-size: 14px;"><a href="###">已关注</a></span>
+                    <span v-if="isFollow" style="margin-left: 50px; font-size: 14px;">已关注</span>
                     <span v-else style="margin-left: 50px; font-size: 14px;"><a href="###" @click="follow()">关注</a></span>
                 </h3>
                 <div class="proText1">
@@ -361,11 +368,16 @@ new Vue({
         houseImage1List: [],
         isFollow: false,
 
-        isLoad: false
+        isLoad: false,
+        userInfo:{
+            phone:'',
+            nickName:''
+        }
     },
 
     created() {
-        this.init()
+        this.init(),
+        this.login()
     },
 
     mounted () {
@@ -379,6 +391,18 @@ new Vue({
     },
 
     methods: {
+        login(){
+            let userInfoString = window.localStorage.getItem("userInfo")
+            if(userInfoString != null && userInfoString != '') {
+                this.userInfo = JSON.parse(userInfoString)
+            }
+        },
+        logout(){
+            axios.get('/userInfo/logout').then(function (response) {
+                window.localStorage.setItem("userInfo",null);
+                window.location.href = "login.html";
+            })
+        },
         runSwiper() {
             var swiper = new Swiper(".mySwiper", {
                 spaceBetween: 10,
@@ -412,6 +436,22 @@ new Vue({
                 that.houseImage1List = response.data.data.houseImage1List
                 that.isFollow = response.data.data.isFollow
                 that.isLoad = true
+            });
+        },
+
+        follow() {
+            //  路径中为什么多增加auth.因为需要进行拦截器权限拦截。未登录不能进行房源关注。
+            var that = this
+            axios.get('/userFollow/auth/follow/'+this.id).then(function (response) {
+                //如果没登录，拦截器会返回208状态，跳转登录页面
+                if (response.data.code == 208) {
+                    window.location.href = 'login.html?originUrl='+window.location.href
+                } else if (response.data.code == 200){ // return Result.ok()
+                    //that.isFollow = true
+                    that.isFollow = response.data.data
+                } else{
+                    alert("关注房源失败");
+                }
             });
         }
     }

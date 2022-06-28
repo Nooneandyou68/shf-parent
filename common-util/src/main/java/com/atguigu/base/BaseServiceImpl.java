@@ -40,7 +40,7 @@ public abstract class BaseServiceImpl<T> implements BaseService<T>{
         //开启分页功能，将这两个参数，与当前线程进行绑定，传递给dao层。
         // startIndex = (pageNum-1)*pageSize
         // select 语句 最后，自动增加 limit ?,?         limit startIndex,pageSIze
-        PageHelper.startPage(pageNum, pageSize); // ThreadLocal
+        PageHelper.startPage(pageNum,pageSize); // ThreadLocal
 
         Page<T> page = getEntityDao().findPage(filters);
         return new PageInfo(page,5);

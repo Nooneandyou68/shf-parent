@@ -6,60 +6,92 @@ import com.atguigu.entity.HouseUser;
 import com.atguigu.service.HouseUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
-/**
- * @PROJECT_NAME: shf-parent
- * @DESCRIPTION:
- * @USER: Administrator
- * @DATE: 2022/6/23 18:30
- */
 @Controller
-@RequestMapping(value = "/houseUser")
+@RequestMapping(value="/houseUser")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class HouseUserController extends BaseController {
 
-    private static final String PAGE_CREATE = "houseUser/create";
-    private final static String PAGE_EDIT = "houseUser/edit";
-    private final static String LIST_ACTION = "redirect:/house/";
-
-
     @Reference
-    HouseUserService houseUserService;
+    private HouseUserService houseUserService;
 
-    @RequestMapping("/create")
-    public String create(Map map, HouseUser houseUser) {
-        map.put("houseUser", houseUser);
+    private final static String LIST_ACTION = "redirect:/house/detail/";
+    private final static String PAGE_CREATE = "houseUser/create";
+    private final static String PAGE_EDIT = "houseUser/edit";
+
+
+    /**
+     * 进入新增
+     * @param model
+     * @param houseUser
+     * @return
+     */
+    @GetMapping("/create")
+    public String create(ModelMap model, HouseUser houseUser) {
+        model.addAttribute("houseUser",houseUser);
         return PAGE_CREATE;
     }
 
-    @RequestMapping("/save")
-    public String save(HouseUser houseUser, HttpServletRequest request) {
+    /**
+     * 保存新增
+     * @param model
+     * @param houseUser
+     * @param request
+     * @return
+     */
+    @PostMapping("/save")
+    public String save(ModelMap model, HouseUser houseUser, HttpServletRequest request) {
+        //SysUser user = this.currentSysUser(request);
         houseUserService.insert(houseUser);
-        return this.successPage(null, request);
+        return this.successPage(this.MESSAGE_SUCCESS, request);
     }
 
-    @RequestMapping("edit/{id}")
-    public String edit(@PathVariable("id") Long id, Map map) {
+    /**
+     * 编辑
+     * @param model
+     * @param id
+     * @return
+     */
+    @GetMapping("/edit/{id}")
+    public String edit(ModelMap model,@PathVariable Long id) {
         HouseUser houseUser = houseUserService.getById(id);
-        map.put("houseUser", houseUser);
+        model.addAttribute("houseUser",houseUser);
         return PAGE_EDIT;
     }
 
-    @RequestMapping("/delete/{houseId}/{id}")
-    public String delete(@PathVariable("houseId") Long houseId, @PathVariable("id")Long id) {
+    /**
+     * 保存更新
+     * @param model
+     * @param id
+     * @param houseUser
+     * @param request
+     * @return
+     */
+    @PostMapping(value="/update/{id}")
+    public String update(ModelMap model, @PathVariable Long id, HouseUser houseUser, HttpServletRequest request) {
+        HouseUser currentHouseUser = houseUserService.getById(id);
+        BeanUtils.copyProperties(houseUser, currentHouseUser);
+
+        houseUserService.update(currentHouseUser);
+        return this.successPage(this.MESSAGE_SUCCESS, request);
+    }
+
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    @GetMapping("/delete/{houseId}/{id}")
+    public String delete(@PathVariable Long houseId, @PathVariable Long id) {
         houseUserService.delete(id);
         return LIST_ACTION + houseId;
     }
 
-    @RequestMapping("/update/{id}")
-    public String update(@PathVariable("id") Long id, HouseUser houseUser, HttpServletRequest request) {
-        HouseUser userServiceById = houseUserService.getById(id);
-        BeanUtils.copyProperties(houseUser,userServiceById);
-        houseUserService.update(userServiceById);
-        return this.successPage(null, request);
-    }
 }

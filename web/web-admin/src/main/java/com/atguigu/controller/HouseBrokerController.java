@@ -2,6 +2,7 @@ package com.atguigu.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.atguigu.base.BaseController;
+import com.atguigu.base.BaseService;
 import com.atguigu.entity.Admin;
 import com.atguigu.entity.House;
 import com.atguigu.entity.HouseBroker;
